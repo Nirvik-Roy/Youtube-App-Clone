@@ -1,10 +1,21 @@
-import React, { useState } from "react";
-import { Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { FlatList, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import * as Icon from "react-native-feather";
-export const YoutubeHome = () => {
+import axios from 'axios'
+export const YoutubeHome = ({navigation}) => {
+  const [APIdata,setAPIdata]=useState([])
+ const api='https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=songs&type=video&key=AIzaSyCzSCpPWI52OWcRrlk2ShG2zz5_I4APHfk'
 
+ const fetchApi = () =>{
+  axios.get(api).then((res)=>{
+    setAPIdata(res.data.items);
+  })
+ }
+ useEffect(()=>{
+ 
+ },[])
   const data = [
     {
       id: 1,
@@ -71,7 +82,7 @@ export const YoutubeHome = () => {
 
 
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={(()=>navigation.navigate('Search'))}>
                 <Icon.Search stroke={'white'} strokeWidth={1.7} width={25} height={25} />
               </TouchableOpacity>
 
@@ -103,22 +114,25 @@ export const YoutubeHome = () => {
           </ScrollView>
 
           <View>
-            <ScrollView>
+            
               <View style={{width:'100%',marginTop:8}}>
-                <View style={{width:'100%',height:220}}>
-                  <Image style={{width:'100%',height:'100%',objectFit:'cover'}} source={require('../Images/1600w-GAaTBbqaaGg.webp')}/>
+              <FlatList data={APIdata} renderItem={((e,i)=>{
+              return(
+                <>
+                    <View key={i} style={{width:'100%',height:220}}>
+                  <Image style={{width:'100%',height:'100%',}} source={{uri:e.item.snippet.thumbnails.high.url}}/>
                 </View>
                 <View style={{flexDirection:'row',marginTop:6,alignItems:'center',justifyContent:'space-between',paddingHorizontal:7}}>
                       <TouchableWithoutFeedback>
-                        <View style={{width:45,height:45,borderRadius:50}}>
-                        <Image style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:50}} source={require('../Images/1600w-GAaTBbqaaGg.webp')}/>
+                        <View style={{width:40,height:40,borderRadius:50,overflow:'hidden'}}>
+                        <Image style={{width:'100%',height:'100%',objectFit:'fill',borderRadius:50}} source={{uri:e.item.snippet.thumbnails.default.url}}/>
                         </View>
                       </TouchableWithoutFeedback>
 
                       <View style={{width:'75%'}}>
-                        <Text style={{color:'white',fontSize:15,fontWeight:700}}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod temp....</Text>
-                        <View style={{flexDirection:'row',justifyContent:'flex-start',alignItems:'center',columnGap:3,marginTop:2}}>
-                          <Text style={{color:'white',fontSize:12,fontWeight:700}}>Sony SAB</Text>
+                        <Text style={{color:'white',fontSize:15,fontWeight:700}}>{e.item.snippet.title}</Text>
+                        <View style={{flexDirection:'row',justifyContent:'flex-start',alignItems:'center',columnGap:3,marginTop:2,paddingBottom:5}}>
+                          <Text style={{color:'white',fontSize:12,fontWeight:700}}>{e.item.snippet.channelTitle}</Text>
                           <Text style={{color:'white',fontSize:12,fontWeight:700}}>.</Text>
                           <Text style={{color:'white',fontSize:12,fontWeight:700}}>9.4M views</Text>
                           <Text style={{color:'white',fontSize:12,fontWeight:700}}>.</Text>
@@ -131,13 +145,17 @@ export const YoutubeHome = () => {
                       </TouchableOpacity>
 
 
-                </View>
+                </View>  
+                </>
+              )
+            })}/>
+               
               </View>
 
               
 
               
-            </ScrollView>
+         
           </View>
         </SafeAreaView>
       </View>
